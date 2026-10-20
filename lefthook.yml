@@ -1,0 +1,20 @@
+# Git hooks: https://lefthook.dev/configuration/
+# Быстрые проверки только изменённых файлов. Полная проверка (типы, тесты) — в CI и `pnpm check`.
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: eslint
+      glob: '*.{ts,mts,vue}'
+      run: node_modules/.bin/eslint --max-warnings 0 --fix {staged_files}
+      stage_fixed: true
+
+    - name: prettier
+      glob: '*.{ts,mts,mjs,vue,css,json,md,yml,yaml,html}'
+      run: node_modules/.bin/prettier --write --ignore-unknown {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  jobs:
+    - name: conventional-commits
+      run: node scripts/check-commit-msg.mjs {1}
