@@ -1,0 +1,13 @@
+/*
+ * prefers-reduced-motion: быстрые длительности становятся мгновенными, base/slow — короткое затухание.
+ * Компоненты дополнительно отключают у себя сдвиги и масштабирование (в своих <style scoped>).
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  [data-theme] {
+    --duration-fast: 1ms;
+    --duration-base: 120ms;
+    --duration-slow: 120ms;
+    --duration-count: 1ms;
+  }
+}

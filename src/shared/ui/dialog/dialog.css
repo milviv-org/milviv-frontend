@@ -1,0 +1,157 @@
+/*
+ * Блок mv-dialog — модальное окно. Общий для AppDialog (Reka Dialog) и AppConfirm (Reka AlertDialog):
+ * варианты одного компонента делят блок и файл стилей (CONVENTIONS, 6.2).
+ *
+ * mv-dialog              панель (DialogContent)
+ * mv-dialog__overlay     подложка
+ * mv-dialog__head        иконка + строка заголовка
+ * mv-dialog__head-row    заголовок и крестик
+ * mv-dialog__title, __close, __body, __description, __foot
+ * --size-sm
+ *
+ * Появление и исчезновение — @keyframes по data-state: Reka держит слой в DOM до конца анимации.
+ */
+
+@import '@/shared/styles/media.css';
+
+.mv-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: var(--color-overlay);
+  backdrop-filter: blur(var(--blur-overlay));
+}
+
+.mv-dialog__overlay[data-state='open'] {
+  animation: mv-dialog-fade-in var(--duration-slow) var(--ease-enter);
+}
+
+.mv-dialog__overlay[data-state='closed'] {
+  animation: mv-dialog-fade-out var(--duration-base) var(--ease-exit);
+}
+
+/* По центру без transform: transform занят анимацией появления. */
+.mv-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  width: min(480px, calc(100% - 2 * var(--space-4)));
+  height: fit-content;
+  max-height: calc(100% - 2 * var(--space-6));
+  margin: auto;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-3);
+  color: var(--color-text);
+}
+
+.mv-dialog:focus {
+  outline: none;
+}
+
+.mv-dialog--size-sm {
+  width: min(400px, calc(100% - 2 * var(--space-4)));
+}
+
+.mv-dialog[data-state='open'] {
+  animation: mv-dialog-enter var(--duration-slow) var(--ease-enter);
+}
+
+.mv-dialog[data-state='closed'] {
+  animation: mv-dialog-exit var(--duration-base) var(--ease-exit);
+}
+
+.mv-dialog__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-6) 0;
+}
+
+.mv-dialog__head-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.mv-dialog__title {
+  flex: 1;
+  min-width: 0;
+  font: var(--font-h2);
+  letter-spacing: var(--tracking-h2);
+}
+
+.mv-dialog__close {
+  margin: -6px -10px 0 0;
+}
+
+.mv-dialog__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-6);
+  overflow-y: auto;
+}
+
+.mv-dialog__description {
+  color: var(--color-text-muted);
+}
+
+.mv-dialog__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-6) var(--space-6);
+}
+
+@keyframes mv-dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@keyframes mv-dialog-exit {
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@keyframes mv-dialog-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes mv-dialog-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Мобильный: кнопки во всю ширину, главная — сверху. */
+@media (--mv-mobile) {
+  .mv-dialog__foot {
+    flex-direction: column-reverse;
+  }
+
+  .mv-dialog__foot > :deep(*) {
+    width: 100%;
+  }
+}
+
+/* Без сдвига — только затухание. */
+@media (prefers-reduced-motion: reduce) {
+  .mv-dialog[data-state='open'] {
+    animation-name: mv-dialog-fade-in;
+  }
+
+  .mv-dialog[data-state='closed'] {
+    animation-name: mv-dialog-fade-out;
+  }
+}

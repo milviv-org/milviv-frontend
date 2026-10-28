@@ -5,6 +5,8 @@
 export const RouteName = {
   Home: 'home',
   NotFound: 'not-found',
+  /** Витрина UI-kit, только в dev-сборке. */
+  DevUi: 'dev-ui',
 } as const
 
 export type RouteName = (typeof RouteName)[keyof typeof RouteName]

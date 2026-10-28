@@ -6,6 +6,8 @@
 
 - [ROADMAP.md](ROADMAP.md) — этапы разработки.
 - [DESIGN.md](DESIGN.md) — как получить дизайн и передать его в разработку.
+- [CONVENTIONS.md](CONVENTIONS.md) — соглашения о коде: имена, TSDoc, БЭМ-классы `mv-`, где живёт логика.
+- [LIBRARIES.md](LIBRARIES.md) — каждая зависимость: зачем, почему она, цена.
 - Продукт: `../milviv-org`. REST API: `../skyrim_grade_java/docs/rest-api`.
 
 ---
@@ -224,35 +226,45 @@ Store не вызывает API напрямую для серверных да�
 
 ### 6.1 UI-kit (`shared/ui`)
 
-Собственные компоненты, без знания домена:
+Компоненты без знания домена. Интерактивные — обёртки над Reka UI (ADR 0010); Reka импортируется только здесь. Витрина всех компонентов в состояниях — `/dev/ui` (только dev-сборка).
 
-`AppButton`, `AppIconButton`, `AppInput`, `AppTextarea`, `AppSelect`, `AppCheckbox`, `AppSwitch`, `AppDialog`, `AppDrawer`, `AppConfirm`, `AppToast`, `AppTooltip`, `AppDropdownMenu`, `AppTabs`, `AppBadge`, `AppProgress`, `AppSpinner`, `AppSkeleton`, `AppEmptyState`, `AppDatePicker`, `AppTimePicker`, `AppIcon`.
+| Готово (этап 1)                                                                                                                                                                                                                                                                                                                                 | Позже                                                          |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `AppButton`, `AppIconButton`, `AppField`, `AppInput`, `AppTextarea`, `AppSelect`, `AppCheckbox`, `AppSwitch`, `AppTabs`, `AppSegmented`, `AppDialog`, `AppConfirm`, `AppDrawer`, `AppDropdownMenu` (+ `AppMenuItem`, `AppMenuSeparator`, `AppMenuLabel`), `AppTooltip`, `AppBadge`, `AppProgress`, `AppSpinner`, `AppSkeleton`, `AppEmptyState` | `AppToast` — этап 2; `AppDatePicker`, `AppTimePicker` — этап 9 |
+
+Доменные компоненты дизайн-системы (бейджи статуса и сложности, карточки задач и целей, счётчик баллов, поощрения) собираются из UI-kit в `entities`/`features` на своих этапах. Отдельного `AppIcon` нет: иконка Lucide — уже компонент (`import IconPlus from '~icons/lucide/plus'`), размер задаёт `--mv-icon-size`.
 
 Правила компонентов:
 
 - `<script setup lang="ts">`, типизированные `defineProps`/`defineEmits`, `defineModel` для v-model.
 - Компонент — одна ответственность. Больше ~200 строк — повод разделить.
-- Логика, которую можно переиспользовать, выносится в композабл `useXxx`.
+- Логика — в функциях и классах `.ts` с unit-тестами, компонент только связывает (CONVENTIONS, 4–5).
+- Классы — БЭМ с префиксом `mv-` (CONVENTIONS, 6.2), проверяет `pnpm css:check`.
 - Доступность — с первого дня: фокус, клавиатура, `aria-*`, контраст по токенам.
 
 ### 6.2 Где стоит взять библиотеку (решаем вместе перед этапом)
 
-| Задача                                                                                | Рекомендация                                                               | Альтернативы                                                                            |
-| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| Dialog, Popover, Dropdown, Select/Combobox, Tooltip — фокус-ловушки, клавиатура, ARIA | **Reka UI** (headless, без стилей — вид полностью наш)                     | Своё на нативных `<dialog>` + Popover API + Floating UI; Headless UI (мало компонентов) |
-| Выбор даты                                                                            | Calendar/DatePicker из Reka UI                                             | Своё на date-fns                                                                        |
-| Графики статистики                                                                    | **Свои SVG-компоненты**: столбцы и кольцевая диаграмма, ~0 КБ зависимостей | Chart.js + vue-chartjs (лениво); ECharts — слишком тяжёлый                              |
-| Календарь месяца/недели                                                               | Своё: сетка на CSS Grid                                                    | FullCalendar — тяжёлый, сложно стилизовать                                              |
-| Формы и валидация                                                                     | **VeeValidate + Valibot**                                                  | Regle; свой `useForm`                                                                   |
-| Длинные списки                                                                        | `@tanstack/vue-virtual` (когда списки реально станут длинными)             | —                                                                                       |
-| Markdown в ответах AI (если понадобится)                                              | `markdown-it` + `DOMPurify`, лениво                                        | —                                                                                       |
+| Задача                                                                                | Рекомендация                                                               | Альтернативы                                               |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Dialog, Popover, Dropdown, Select/Combobox, Tooltip — фокус-ловушки, клавиатура, ARIA | ✅ **Решено:** Reka UI (ADR 0010)                                          | —                                                          |
+| Выбор даты                                                                            | Calendar/DatePicker из Reka UI                                             | Своё на date-fns                                           |
+| Графики статистики                                                                    | **Свои SVG-компоненты**: столбцы и кольцевая диаграмма, ~0 КБ зависимостей | Chart.js + vue-chartjs (лениво); ECharts — слишком тяжёлый |
+| Календарь месяца/недели                                                               | Своё: сетка на CSS Grid                                                    | FullCalendar — тяжёлый, сложно стилизовать                 |
+| Формы и валидация                                                                     | **VeeValidate + Valibot**                                                  | Regle; свой `useForm`                                      |
+| Длинные списки                                                                        | `@tanstack/vue-virtual` (когда списки реально станут длинными)             | —                                                          |
+| Markdown в ответах AI (если понадобится)                                              | `markdown-it` + `DOMPurify`, лениво                                        | —                                                          |
 
 ### 6.3 Стили
 
-- Дизайн-токены (`shared/styles/tokens.css`): цвета (семантические: `--color-bg`, `--color-text`, `--color-accent`, `--color-danger` и цвета шести сложностей), типографика, отступы (шаг 4px), радиусы, тени, z-index, длительности анимаций.
-- Тёмная тема — переопределение токенов на `[data-theme='dark']`. Компоненты используют только семантические токены и о теме не знают.
-- Стиль компонента — в `<style scoped>`. Глобально только reset, токены и типографика.
-- Mobile-first, контрольные точки — токенами. Подход к CSS (plain CSS или Tailwind) уточняется перед этапом 1.
+Plain CSS, без Tailwind (ADR 0008).
+
+- Дизайн-токены (`shared/styles/tokens.css`) **генерируются** из `design/tokens.json` — копии токенов дизайн-системы (`pnpm tokens`, CI проверяет синхронность): цвета (семантические и шесть сложностей), стили текста (`--font-h2` для шортката `font` + `--tracking-h2`), отступы (шаг 4px), радиусы, тени, z-index, длительности и кривые анимаций, размеры.
+- Тёмная тема — переопределение токенов на `[data-theme='dark']`. Компоненты используют только семантические токены и о теме не знают; редкие исключения — селектор `[data-theme='dark'] .x` в scoped-стиле (не `:global()`: он снимает scope со всего селектора).
+- Тема без вспышки: inline-скрипт в `index.html` ставит `data-theme` до загрузки бандла; дальше тему ведёт `useThemeStore` (`features/theme-switch`), он же обновляет `<meta name="theme-color">`.
+- Стиль компонента — в `<style scoped>`. Глобально (`shared/styles`) только шрифт, reset, токены, типографика (`.mv-h1`, `.mv-num`, `.mv-sr-only`…) и `prefers-reduced-motion`.
+- Иконки: класс `mv-icon`, размер `--mv-icon-size` (20px по умолчанию), обводка `--mv-icon-stroke` (1.75).
+- Анимируем только `transform` и `opacity`; каждый компонент сам отключает сдвиги при `prefers-reduced-motion`.
+- Mobile-first. Контрольные точки — один источник (`design/tokens.json`), из него генерируются `@custom-media --mv-*` для CSS и `MediaQuery`/`Breakpoint` для JS; Lightning CSS подставляет запросы при сборке (ADR 0012). Числа в `@media` запрещены.
 
 ---
 
@@ -263,7 +275,7 @@ Store не вызывает API напрямую для серверных да�
 - Ленивые страницы; prefetch вероятного маршрута при наведении или в простое.
 - Тяжёлое грузится только там, где нужно: графики — на статистике, markdown — в ассистенте.
 - Иконки — `unplugin-icons`: в бандл попадают только используемые SVG как компоненты.
-- Шрифт: один variable-шрифт с кириллическим подмножеством, `font-display: swap`, `preload`.
+- Шрифт: один variable-шрифт (Manrope) — два файла в репозитории (ADR 0011), подмножества по `unicode-range` — браузер скачивает только кириллицу и латиницу, `font-display: swap`. `preload` кириллического файла — на этапе 15 по замерам LCP.
 - Сборка под современные браузеры (`es2022`), хешированные имена, долгий кеш, brotli на сервере.
 - **Бюджеты** в CI: начальный JS ≤ 150 КБ gzip; LCP < 2 с, INP < 200 мс (Lighthouse CI).
 
@@ -315,19 +327,19 @@ Store не вызывает API напрямую для серверных да�
 
 ## 10. Качество
 
-| Что               | Инструмент                                                                                    |
-| ----------------- | --------------------------------------------------------------------------------------------- |
-| Пакетный менеджер | pnpm 11 через corepack, Node 22 (`.nvmrc`, `packageManager`) — ADR 0006                       |
-| Типы              | TypeScript 6 (ADR 0005), `strict`, `noUncheckedIndexedAccess`, `vue-tsc --build` в CI         |
-| Линт              | ESLint (flat config) + `eslint-plugin-vue` + `typescript-eslint` + `eslint-plugin-boundaries` |
-| Формат            | Prettier                                                                                      |
-| Git hooks         | lefthook: lint + format на staged-файлах                                                      |
-| Коммиты           | Conventional Commits (`feat(tasks): …`), проверка в hook `commit-msg`                         |
-| Unit/компоненты   | Vitest + @vue/test-utils + happy-dom                                                          |
-| Моки API          | MSW: те же моки работают в тестах и в dev без бэкенда                                         |
-| E2E               | Playwright: критические сценарии (вход, задача → выполнение → баллы, AI-подтверждение)        |
-| Бандл             | `rollup-plugin-visualizer`, `size-limit`                                                      |
-| CI                | GitHub Actions: format → lint → typecheck → test → build; size — с этапа 1                    |
+| Что               | Инструмент                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------- |
+| Пакетный менеджер | pnpm 11 через corepack, Node 22 (`.nvmrc`, `packageManager`) — ADR 0006                           |
+| Типы              | TypeScript 6 (ADR 0005), `strict`, `noUncheckedIndexedAccess`, `vue-tsc --build` в CI             |
+| Линт              | ESLint (flat config) + `eslint-plugin-vue` + `typescript-eslint` + `eslint-plugin-boundaries`     |
+| Формат            | Prettier                                                                                          |
+| Git hooks         | lefthook: lint + format на staged-файлах                                                          |
+| Коммиты           | Conventional Commits (`feat(tasks): …`), проверка в hook `commit-msg`                             |
+| Unit/компоненты   | Vitest + @vue/test-utils + happy-dom                                                              |
+| Моки API          | MSW: те же моки работают в тестах и в dev без бэкенда                                             |
+| E2E               | Playwright: критические сценарии (вход, задача → выполнение → баллы, AI-подтверждение)            |
+| Бандл             | `scripts/check-bundle-size.mjs` — gzip начальных файлов против бюджета, предупреждение (ADR 0011) |
+| CI                | GitHub Actions: format → lint → typecheck → test → build; size — с этапа 1                        |
 
 ### Что тестируем обязательно
 
@@ -340,9 +352,4 @@ Store не вызывает API напрямую для серверных да�
 
 ## 11. Соглашения по коду
 
-- Папки и слайсы — `kebab-case`; компоненты — `PascalCase.vue`; композаблы — `useXxx.ts`; типы — `PascalCase` без префикса `I`.
-- Брендированные ID: `type TaskId = Brand<string, 'TaskId'>`, чтобы `goalId` нельзя было передать вместо `taskId`.
-- Никаких `any`. Неизвестное — `unknown` с сужением.
-- Комментарий объясняет **почему**, а не что.
-- Публичный API слайса (`index.ts`) экспортирует минимум.
-- Каждое отступление от этого документа — либо правка документа, либо ADR.
+Все правила — в [CONVENTIONS.md](CONVENTIONS.md). Каждое отступление от этого документа — либо правка документа, либо ADR.

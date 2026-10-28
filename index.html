@@ -4,7 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="MILVIV — цели, проекты и задачи с геймификацией" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f6f6f3" />
     <title>MILVIV</title>
+    <script>
+      // Тема ставится до загрузки бандла, иначе на тёмной системе мелькнёт светлая.
+      // Ключ и значения совпадают с features/theme-switch (THEME_STORAGE_KEY); цвета — --color-bg тем.
+      ;(function () {
+        var preference
+        try {
+          preference = localStorage.getItem('milviv:theme')
+        } catch (e) {}
+        var theme =
+          preference === 'light' || preference === 'dark'
+            ? preference
+            : matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+        document.documentElement.dataset.theme = theme
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute('content', theme === 'dark' ? '#111213' : '#f6f6f3')
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>

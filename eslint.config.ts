@@ -120,6 +120,33 @@ export default defineConfigWithVueTs(
   },
 
   {
+    name: 'app/ui-library',
+    files: ['src/**/*.{ts,vue}'],
+    ignores: ['src/shared/ui/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'reka-ui',
+              message:
+                'Reka UI используется только внутри src/shared/ui — берите обёртки App* из @/shared/ui (ADR 0010).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  {
+    name: 'app/scripts',
+    // Скрипты сборки и проверок общаются с человеком через консоль — это их результат.
+    files: ['scripts/**/*.mjs'],
+    rules: { 'no-console': 'off' },
+  },
+
+  {
     name: 'app/exceptions',
     // Низкоуровневые обёртки, ради которых правила выше и существуют.
     files: ['src/shared/lib/date/**', 'src/**/*.test.ts'],

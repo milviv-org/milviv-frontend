@@ -26,6 +26,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Design tokens in sync
+        run: pnpm tokens:check
+
+      - name: CSS class prefix
+        run: pnpm css:check
+
       - name: Format
         run: pnpm format:check
 
@@ -40,3 +46,6 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Bundle size
+        run: pnpm size

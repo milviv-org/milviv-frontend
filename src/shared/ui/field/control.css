@@ -1,0 +1,118 @@
+/*
+ * Блок mv-control — общий вид поля ввода для AppInput, AppTextarea и AppSelect (CONVENTIONS, 6.2:
+ * варианты одного компонента делят блок и файл стилей). Подключается через <style scoped src>:
+ * исходник один, scoped-копия у каждого компонента.
+ *
+ * mv-control            обёртка: позиционирует иконки
+ * mv-control__input     сам input / textarea / триггер select
+ * mv-control__lead      иконка слева
+ * mv-control__trail     иконка или спиннер справа
+ * --size-sm, --with-lead, --with-trail, --multiline (textarea)
+ */
+
+@import '@/shared/styles/media.css';
+
+.mv-control {
+  --mv-icon-size: 16px;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.mv-control__input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--control-md);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: var(--font-body);
+  text-align: left;
+  appearance: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
+}
+
+.mv-control__input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.mv-control__input:hover:not(:disabled, [data-disabled]) {
+  border-color: var(--color-text-muted);
+}
+
+/* Поле показывает кольцо и при клике мышью — так ожидается для ввода текста. */
+.mv-control__input:focus,
+.mv-control__input[data-state='open'] {
+  border-color: var(--color-focus-ring);
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 1px;
+}
+
+.mv-control__input[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.mv-control__input[aria-invalid='true']:focus {
+  outline-color: var(--color-danger);
+}
+
+.mv-control__input:disabled,
+.mv-control__input[data-disabled] {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.mv-control--size-sm .mv-control__input {
+  height: var(--control-sm);
+  border-radius: var(--radius-sm);
+  font: var(--font-small);
+}
+
+.mv-control--multiline .mv-control__input {
+  height: auto;
+  min-height: 96px;
+  padding: var(--space-2) var(--space-3);
+  resize: vertical;
+}
+
+.mv-control__lead,
+.mv-control__trail {
+  position: absolute;
+  display: flex;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.mv-control__lead {
+  left: var(--space-3);
+}
+
+.mv-control__trail {
+  right: var(--space-3);
+}
+
+.mv-control--with-lead .mv-control__input {
+  padding-left: 40px;
+}
+
+.mv-control--with-trail .mv-control__input {
+  padding-right: 40px;
+}
+
+/* Мобильный: высота 44px и шрифт 16px — iOS не масштабирует страницу при фокусе. */
+@media (--mv-mobile) {
+  .mv-control:not(.mv-control--size-sm, .mv-control--multiline) .mv-control__input {
+    height: var(--touch-target);
+  }
+
+  .mv-control:not(.mv-control--size-sm) .mv-control__input {
+    font-size: 16px;
+  }
+}

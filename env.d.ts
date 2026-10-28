@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="unplugin-icons/types/vue3" />
 
 interface ImportMetaEnv {
   /** Базовый путь REST API. По умолчанию `/api` — тот же origin, что и у фронтенда. */

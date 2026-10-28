@@ -1,13 +1,19 @@
 import { fileURLToPath, URL } from 'node:url'
 
 import vue from '@vitejs/plugin-vue'
+import Icons from 'unplugin-icons/vite'
 import { defineConfig, loadEnv, type ProxyOptions } from 'vite'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'DEV_')
 
   return {
-    plugins: [vue()],
+    plugins: [
+      vue(),
+      // Иконки — компоненты `~icons/lucide/<name>`; в бандл попадают только импортированные.
+      // Размер и обводку задаёт глобальный класс `.mv-icon` (shared/styles/base.css).
+      Icons({ compiler: 'vue3', defaultClass: 'mv-icon' }),
+    ],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -17,6 +23,12 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/api': createApiProxy(env),
       },
+    },
+    // Lightning CSS (уже в составе Vite) подставляет именованные медиазапросы `@media (--mv-*)`
+    // из src/shared/styles/media.css — контрольные точки живут в одном месте (ADR 0012).
+    css: {
+      transformer: 'lightningcss',
+      lightningcss: { drafts: { customMedia: true } },
     },
     build: {
       target: 'es2022',

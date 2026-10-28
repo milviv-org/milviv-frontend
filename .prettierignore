@@ -1,3 +1,7 @@
 dist
 coverage
 pnpm-lock.yaml
+# Генерируются из design/tokens.json (scripts/build-tokens.mjs)
+src/shared/styles/tokens.css
+src/shared/styles/media.css
+src/shared/config/media-queries.ts

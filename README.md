@@ -19,18 +19,25 @@ Dev-сервер проксирует `/api/*` на бэкенд. Бэкенду
 
 ## Команды
 
-| Команда                         | Что делает                                       |
-| ------------------------------- | ------------------------------------------------ |
-| `pnpm dev`                      | Dev-сервер                                       |
-| `pnpm build`                    | Production-сборка в `dist/`                      |
-| `pnpm check`                    | Всё, что проверяет CI: формат, линт, типы, тесты |
-| `pnpm lint:fix` / `pnpm format` | Исправить линт / форматирование                  |
-| `pnpm test`                     | Тесты в режиме наблюдения                        |
+| Команда                         | Что делает                                                         |
+| ------------------------------- | ------------------------------------------------------------------ |
+| `pnpm dev`                      | Dev-сервер                                                         |
+| `pnpm build`                    | Production-сборка в `dist/`                                        |
+| `pnpm check`                    | Всё, что проверяет CI: токены, классы, формат, линт, типы, тесты   |
+| `pnpm lint:fix` / `pnpm format` | Исправить линт / форматирование                                    |
+| `pnpm test`                     | Тесты в режиме наблюдения                                          |
+| `pnpm tokens`                   | Пересобрать из `design/tokens.json`: токены, медиазапросы CSS и JS |
+| `pnpm size`                     | Бюджет бандла после `pnpm build`: предупреждает                    |
+| `pnpm css:check`                | Правила стилей: префикс `mv-`, медиазапросы только `--mv-*`        |
+
+Витрина UI-kit — http://localhost:5173/dev/ui (только в dev-сборке).
 
 ## Документация
 
 - [Архитектура](docs/ARCHITECTURE.md) — как устроено приложение и почему. Начинать с неё.
 - [Этапы разработки](docs/ROADMAP.md)
+- [Соглашения о коде](docs/CONVENTIONS.md) — обязательны
+- [Библиотеки](docs/LIBRARIES.md) — зачем каждая зависимость
 - [Решения (ADR)](docs/adr/README.md)
 - [Дизайн](docs/DESIGN.md) и [бриф экранов](docs/DESIGN-BRIEF.md)
 - [Доработки бэкенда](docs/BACKEND-REQUESTS.md)
@@ -39,4 +46,6 @@ Dev-сервер проксирует `/api/*` на бэкенд. Бэкенду
 
 - Слои FSD и публичный API слайсов — ESLint (`boundaries/dependencies`).
 - Даты только через `@/shared/lib/date`, подписки только через VueUse — ESLint (`no-restricted-syntax`).
+- Префикс `mv-` у CSS-классов и медиазапросы только `@media (--mv-*)` — `pnpm css:check`.
+- Reka UI только в `src/shared/ui` — ESLint (`no-restricted-imports`).
 - Сообщения коммитов — Conventional Commits (`feat(tasks): …`), git hook `commit-msg`.

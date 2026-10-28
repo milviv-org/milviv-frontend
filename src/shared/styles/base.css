@@ -1,0 +1,157 @@
+/*
+ * Глобальная база: reset, документ, фокус, иконки, типографика.
+ * Всё остальное — в <style scoped> компонентов. Значения — только из токенов (tokens.css).
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+img,
+svg {
+  display: block;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+/* Кольцо фокуса — только с клавиатуры. */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/*
+ * Иконки Lucide из unplugin-icons получают класс `mv-icon`.
+ * Публичные переменные блока: `--mv-icon-size` (20px) и `--mv-icon-stroke` (1.75, как в дизайн-системе).
+ * Почему переменные, а не классы размера: компонент задаёт `--mv-icon-size: 16px` у себя, и все иконки
+ * в его слотах уменьшаются, не зная, где они лежат. Обводка — CSS-свойством, потому что Lucide
+ * зашивает `stroke-width="2"` атрибутом, а CSS перекрывает атрибуты SVG.
+ */
+.mv-icon {
+  width: var(--mv-icon-size, 20px);
+  height: var(--mv-icon-size, 20px);
+  flex: none;
+}
+
+.mv-icon * {
+  stroke-width: var(--mv-icon-stroke, 1.75);
+}
+
+/* ───────────── Типографика ───────────── */
+
+.mv-display {
+  font: var(--font-display);
+  letter-spacing: var(--tracking-display);
+}
+
+.mv-h1 {
+  font: var(--font-h1);
+  letter-spacing: var(--tracking-h1);
+}
+
+.mv-h2 {
+  font: var(--font-h2);
+  letter-spacing: var(--tracking-h2);
+}
+
+.mv-h3 {
+  font: var(--font-h3);
+}
+
+.mv-body {
+  font: var(--font-body);
+}
+
+.mv-body-strong {
+  font: var(--font-body-strong);
+}
+
+.mv-small {
+  font: var(--font-small);
+}
+
+.mv-label {
+  font: var(--font-label);
+}
+
+.mv-caption {
+  font: var(--font-caption);
+  letter-spacing: var(--tracking-caption);
+}
+
+.mv-numeric {
+  font: var(--font-numeric);
+  font-variant-numeric: tabular-nums;
+}
+
+.mv-numeric-lg {
+  font: var(--font-numeric-lg);
+  letter-spacing: var(--tracking-numeric-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Баллы, счётчики, даты и время — табличные цифры, чтобы числа не дрожали при досчёте.
+   Шорткат `font` сбрасывает font-variant-numeric, поэтому класс ставится вместе с ним, а не вместо. */
+.mv-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.mv-muted {
+  color: var(--color-text-muted);
+}
+
+.mv-wordmark {
+  font: 800 17px/24px var(--font-sans);
+  letter-spacing: 0.08em;
+}
+
+.mv-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

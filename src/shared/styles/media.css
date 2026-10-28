@@ -1,0 +1,14 @@
+/*
+ * Сгенерировано scripts/build-tokens.mjs из design/tokens.json — не править вручную.
+ * Именованные медиазапросы (ADR 0012). Подключение в компоненте:
+ *   @import '@/shared/styles/media.css';
+ *   @media (--mv-desktop-up) { … }
+ * На выходе файл даёт 0 байт: определения заменяются запросами при сборке.
+ */
+
+@custom-media --mv-mobile (width < 768px);
+@custom-media --mv-tablet (768px <= width < 1024px);
+@custom-media --mv-tablet-up (width >= 768px);
+@custom-media --mv-desktop (1024px <= width < 1440px);
+@custom-media --mv-desktop-up (width >= 1024px);
+@custom-media --mv-wide (width >= 1440px);

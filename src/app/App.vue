@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+
+import { AppUiProvider } from '@/shared/ui'
 </script>
 
 <template>
-  <RouterView />
+  <AppUiProvider>
+    <RouterView />
+  </AppUiProvider>
 </template>
